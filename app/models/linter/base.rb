@@ -64,7 +64,7 @@ module Linter
     end
 
     def config
-      @config ||= ConfigBuilder.for(hound_config, name)
+      @config ||= BuildConfig.for(name, hound_config)
     end
   end
 end

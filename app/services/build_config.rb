@@ -1,15 +1,19 @@
-class JshintConfigBuilder
-  pattr_initialize :hound_config
+class BuildConfig
+  pattr_initialize :hound_config, :name
 
-  def self.for(hound_config)
-    new(hound_config).config
+  def self.run(*args)
+    new(*args).run
   end
 
-  def config
-    Config::Jshint.new(load_content)
+  def run
+    config_class.new(load_content)
   end
 
   private
+
+  def config_class
+    ConfigClassFromName.run(name)
+  end
 
   def load_content
     if file_path
@@ -18,8 +22,6 @@ class JshintConfigBuilder
       else
         commit.file_content(file_path)
       end
-    else
-      "{}"
     end
   end
 
@@ -29,7 +31,7 @@ class JshintConfigBuilder
     if response.success?
       response.body
     else
-      raise_parse_error("#{response.status} #{response.body}")
+      raise_fetch_error("#{response.status} #{response.body}")
     end
   end
 
@@ -42,10 +44,14 @@ class JshintConfigBuilder
   end
 
   def linter_config
-    hound_config.content.slice("jshint").values.first
+    hound_config.content.slice(name).values.first
   end
 
   def commit
     hound_config.commit
+  end
+
+  def raise_fetch_error(message)
+    raise Config::FetchError.new(message)
   end
 end

@@ -1,6 +1,6 @@
 require "spec_helper"
 require "app/models/linter/base"
-require "app/models/config_builder"
+require "app/services/build_config"
 require "app/models/config/base"
 require "app/models/config/unsupported"
 
