@@ -7,7 +7,7 @@ require "app/models/config/parser_error"
 require "app/services/build_owner_hound_config"
 
 describe Config::Ruby do
-  describe "#content" do
+  describe "#serialize" do
     context "when the hound config is a legacy config" do
       it "returns the HoundConfig's content as a hash" do
         hound_config = double(
@@ -16,7 +16,7 @@ describe Config::Ruby do
         )
         config = Config::Ruby.new(hound_config)
 
-        expect(config.content).to eq("LineLength" => { "Max" => 90 })
+        expect(config.serialize).to eq("LineLength" => { "Max" => 90 })
       end
     end
 

@@ -15,11 +15,11 @@ module Config
     attr_implement :parse, [:file_content]
 
     def content
-      @content ||= safe_parse
+      @content ||= safe_parse(raw_content || default_content)
     end
 
-    def safe_parse
-      parse(raw_content || default_content)
+    def safe_parse(content)
+      parse(content)
     rescue JSON::ParserError, Psych::Exception => exception
       raise_parse_error(exception.message)
     end
