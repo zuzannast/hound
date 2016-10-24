@@ -1,6 +1,7 @@
 require "spec_helper"
 require "app/models/config/base"
 require "app/models/config/ruby"
+require "app/models/config/serializer"
 require "app/models/hound_config"
 require "app/models/config/parser"
 require "app/models/config/parser_error"
@@ -16,7 +17,7 @@ describe Config::Ruby do
         )
         config = Config::Ruby.new(hound_config)
 
-        expect(config.serialize).to eq("LineLength" => { "Max" => 90 })
+        expect(config.serialize).to eq("---\nLineLength:\n  Max: 90\n")
       end
     end
 
@@ -27,7 +28,7 @@ describe Config::Ruby do
         )
         config = build_config(commit)
 
-        expect(config.content).to eq("LineLength" => { "Max" => 90 })
+        expect(config.serialize).to eq("---\nLineLength:\n  Max: 90\n")
       end
 
       context "and an owner is present" do
