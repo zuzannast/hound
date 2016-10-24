@@ -103,7 +103,12 @@ describe Linter::Jshint do
 
     context "when there is an owner level config enabled" do
       it "schedules a review job with the owner's config merged with locals" do
-        build = create(:build, commit_sha: "foo", pull_request_number: 123)
+        build = create(
+          :build,
+          commit_sha: "foo",
+          pull_request_number: 123,
+          repo: create(:repo, owner: build(:owner)),
+        )
         stubbed_local_config = stub_config_files('{"asi": false, "maxlen": 50}')
         stub_owner_hound_config(
           HoundConfig.new(

@@ -1,25 +1,34 @@
 module Config
   class Jshint < Base
-    pattr_initialize :raw_content
-
-    def serialize(data = content)
-      Serializer.json(data)
+    def initialize(hound_config, owner: nil)
+      super(hound_config)
+      @owner = owner
     end
 
     def content
-      @_content ||= ensure_correct_type(safe_parse(raw_content))
+      owner_config_content.deep_merge(super)
     end
 
-    def merge(raw_overrides)
-      parsed_overrides = parse(raw_overrides)
-      merged_content = content.deep_merge(parsed_overrides)
-      Config::Jshint.new(serialize(merged_content))
+    def serialize(data = content)
+      Serializer.json(data)
     end
 
     private
 
     def parse(file_content = raw_content)
       Parser.json(file_content)
+    end
+
+    def owner_config_content
+      if @owner.present?
+        Config::Jshint.new(owner_hound_config).content
+      else
+        {}
+      end
+    end
+
+    def owner_hound_config
+      BuildOwnerHoundConfig.run(@owner)
     end
   end
 end
