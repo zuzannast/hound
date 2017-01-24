@@ -9,6 +9,7 @@ class HoundConfig
     Linter::Jshint,
     Linter::Remark,
     Linter::Python,
+    Linter::Reek,
     Linter::Ruby,
     Linter::Scss,
     Linter::Swift,
@@ -17,6 +18,7 @@ class HoundConfig
   BETA_LINTERS = %w(
     credo
     eslint
+    reek
     remark
     python
     tslint
