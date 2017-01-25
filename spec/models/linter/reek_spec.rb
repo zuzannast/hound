@@ -1,5 +1,4 @@
 require "rails_helper"
-require "shared_linter_examples"
 
 describe Linter::Reek do
   it_behaves_like "a linter" do
