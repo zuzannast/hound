@@ -8,15 +8,6 @@ require "faraday"
 require "yaml"
 
 class Config::Test < Config::Base
-  def serialize(content)
-    ensure_correct_type(content).to_yaml
-  end
-
-  private
-
-  def parse(file_content)
-    YAML.load(file_content)
-  end
 end
 
 describe Config::Base do

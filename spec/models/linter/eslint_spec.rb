@@ -2,41 +2,11 @@ require "rails_helper"
 
 describe Linter::Eslint do
   it_behaves_like "a linter" do
+    let(:config_class) { Config::Eslint }
+    let(:job_class) { EslintReviewJob }
     let(:lintable_files) { %w(foo.es6 foo.js foo.jsx) }
+    let(:linter_name) { "eslint" }
     let(:not_lintable_files) { %w(foo.js.coffee) }
-  end
-
-  describe "#file_review" do
-    it "returns a saved and incomplete file review" do
-      commit_file = build_commit_file(filename: "lib/a.js")
-      linter = build_linter
-
-      result = linter.file_review(commit_file)
-
-      expect(result).to be_persisted
-      expect(result).not_to be_completed
-    end
-
-    it "schedules a review job" do
-      build = build(:build, commit_sha: "foo", pull_request_number: 123)
-      stub_eslint_config(content: {})
-      commit_file = build_commit_file(filename: "lib/a.js")
-      allow(Resque).to receive(:enqueue)
-      linter = build_linter(build)
-
-      linter.file_review(commit_file)
-
-      expect(Resque).to have_received(:enqueue).with(
-        EslintReviewJob,
-        filename: commit_file.filename,
-        commit_sha: build.commit_sha,
-        linter_name: "eslint",
-        pull_request_number: build.pull_request_number,
-        patch: commit_file.patch,
-        content: commit_file.content,
-        config: "{}",
-      )
-    end
   end
 
   describe "#file_included?" do

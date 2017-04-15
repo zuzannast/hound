@@ -2,40 +2,11 @@ require "rails_helper"
 
 describe Linter::Go do
   it_behaves_like "a linter" do
+    let(:config_class) { Config::Go }
+    let(:job_class) { GoReviewJob }
     let(:lintable_files) { %w(foo.go) }
+    let(:linter_name) { "go" }
     let(:not_lintable_files) { %w(foo.rb) }
-  end
-
-  describe "#file_review" do
-    it "returns a saved and incomplete file review" do
-      linter = build_linter
-      commit_file = build_commit_file(filename: "a.go")
-
-      result = linter.file_review(commit_file)
-
-      expect(result).to be_persisted
-      expect(result).not_to be_completed
-    end
-
-    it "schedules a review job" do
-      build = build(:build, commit_sha: "foo", pull_request_number: 123)
-      linter = build_linter(build)
-      commit_file = build_commit_file(filename: "a.go")
-      allow(Resque).to receive(:enqueue)
-
-      linter.file_review(commit_file)
-
-      expect(Resque).to have_received(:enqueue).with(
-        GoReviewJob,
-        filename: commit_file.filename,
-        commit_sha: build.commit_sha,
-        linter_name: "go",
-        pull_request_number: build.pull_request_number,
-        patch: commit_file.patch,
-        content: commit_file.content,
-        config: {},
-      )
-    end
   end
 
   describe "#file_included?" do

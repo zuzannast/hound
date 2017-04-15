@@ -2,7 +2,10 @@ require "rails_helper"
 
 describe Linter::Jshint do
   it_behaves_like "a linter" do
+    let(:config_class) { Config::Jshint }
+    let(:job_class) { JshintReviewJob }
     let(:lintable_files) { %w(foo.js) }
+    let(:linter_name) { "jshint" }
     let(:not_lintable_files) { %w(foo.js.coffee foo.rb) }
   end
 
@@ -45,16 +48,6 @@ describe Linter::Jshint do
   end
 
   describe "#file_review" do
-    it "returns a saved and incomplete file review" do
-      commit_file = build_commit_file(filename: "lib/a.js")
-      linter = build_linter
-
-      result = linter.file_review(commit_file)
-
-      expect(result).to be_persisted
-      expect(result).not_to be_completed
-    end
-
     context "when the owner has no config enabled" do
       it "schedules a review job with the local config" do
         build = create(:build)

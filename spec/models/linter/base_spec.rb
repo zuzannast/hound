@@ -1,8 +1,4 @@
-require "spec_helper"
-require "app/models/linter/base"
-require "app/models/config/base"
-require "app/models/config/unsupported"
-require "app/services/build_config"
+require "rails_helper"
 
 module Linter
   class Test < Base
@@ -10,9 +6,16 @@ module Linter
   end
 end
 
+class TestReviewJob
+  @queue = :test
+end
+
 describe Linter::Test do
   it_behaves_like "a linter" do
+    let(:config_class) { Config::Test }
+    let(:job_class) { TestReviewJob }
     let(:lintable_files) { %w(foo.yes) }
+    let(:linter_name) { "test" }
     let(:not_lintable_files) { %w(foo.no bar.nope) }
   end
 
@@ -28,7 +31,7 @@ describe Linter::Test do
     context "when the hound config is enabled for the given language" do
       it "returns true" do
         hound_config = instance_double("HoundConfig", linter_enabled?: true)
-        linter = build_linter(hound_config: hound_config)
+        linter = Linter::Test.new(hound_config: hound_config, build: double)
 
         expect(linter).to be_enabled
       end
@@ -37,19 +40,10 @@ describe Linter::Test do
     context "when the hound config is disabled for the given language" do
       it "returns false" do
         hound_config = instance_double("HoundConfig", linter_enabled?: false)
-        linter = build_linter(hound_config: hound_config)
+        linter = Linter::Test.new(hound_config: hound_config, build: double)
 
         expect(linter).not_to be_enabled
       end
     end
-  end
-
-  def build_linter(options = {})
-    default_options = {
-      hound_config: double("HoundConfig", enabled_for?: false),
-      build: double("Build", repo: double("Repo")),
-    }
-
-    Linter::Test.new(default_options.merge(options))
   end
 end
