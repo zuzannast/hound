@@ -14,6 +14,7 @@ class HoundConfig
     Linter::Ruby => { default: true },
     Linter::SassLint => { default: false },
     Linter::Scss => { default: true },
+    Linter::Shellcheck => { default: false },
     Linter::SlimLint => { default: false },
     Linter::Stylelint => { default: false },
     Linter::Swift => { default: true },
